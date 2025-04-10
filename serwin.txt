@@ -1,7 +1,41 @@
+
+{
+    "log": {
+        "access": "",
+        "error": "",
+        "loglevel": "warning"
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {
+                "auth": "noauth",
+                "udp": true,
+                "userLevel": 8
+            },
+            "sniffing": {
+                "destOverride": [],
+                "enabled": false
+            },
+            "tag": "socks"
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 10809,
+            "protocol": "http",
+            "settings": {
+                "userLevel": 8
+            },
+            "tag": "http"
+        }
+    ],
+
 {
   "outbounds": [
     {
-      "tag": "proxy-chain-stage1",
+      "tag": "chain",
       "protocol": "socks",
       "settings": {
         "servers": [
@@ -13,7 +47,7 @@
       }
     },
     {
-      "tag": "proxy-chain-stage2",
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
@@ -68,12 +102,12 @@
     "rules": [
       {
         "type": "field",
-        "outboundTag": "proxy-chain-stage1",
+        "outboundTag": "chain",
         "inboundTag": ["socks", "http"]
       },
       {
         "type": "field",
-        "outboundTag": "proxy-chain-stage2",
+        "outboundTag": "proxy",
         "network": "tcp,udp",
         "port": "0-65535",
         "balancerTag": "proxy-chain"
@@ -82,7 +116,7 @@
     "balancers": [
       {
         "tag": "proxy-chain",
-        "selector": ["proxy-chain-stage1"]
+        "selector": ["chain"]
       }
     ]
   }
